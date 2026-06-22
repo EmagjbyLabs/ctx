@@ -29,6 +29,11 @@ impl Repo {
             .and_then(|name| name.to_str())
             .unwrap_or("unknown")
     }
+
+    #[cfg(test)]
+    pub fn from_root_for_test(root: PathBuf) -> Self {
+        Self { root }
+    }
 }
 
 fn find_git_root(start: &Path) -> Result<PathBuf> {

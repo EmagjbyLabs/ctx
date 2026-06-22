@@ -1,5 +1,6 @@
 mod cli;
 mod command;
+mod render;
 mod repo;
 mod walk;
 
