@@ -1,4 +1,5 @@
 mod cli;
+mod clipboard;
 mod command;
 mod filter;
 mod render;
