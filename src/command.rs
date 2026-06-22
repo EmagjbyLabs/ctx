@@ -1,9 +1,10 @@
 use anyhow::Result;
 
-use crate::{cli::Cli, repo::Repo};
+use crate::{cli::Cli, repo::Repo, walk::collect_candidate_files};
 
 pub fn run(cli: Cli) -> Result<()> {
     let repo = Repo::discover()?;
+    let files = collect_candidate_files(repo.root())?;
 
     println!("ctx initialized");
     println!("repository: {}", repo.name());
@@ -19,6 +20,10 @@ pub fn run(cli: Cli) -> Result<()> {
 
     if cli.stdout {
         println!("stdout mode: enabled");
+    }
+
+    for file in files {
+        println!("{}", file.relative_path.display());
     }
 
     Ok(())

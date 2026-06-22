@@ -1,6 +1,7 @@
 mod cli;
 mod command;
 mod repo;
+mod walk;
 
 use anyhow::Result;
 use clap::Parser;
