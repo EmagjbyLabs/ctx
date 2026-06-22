@@ -1,7 +1,8 @@
 use anyhow::Result;
 
 use crate::{
-    cli::Cli, filter::FileFilters, render::render_digest, repo::Repo, walk::collect_candidate_files,
+    cli::Cli, clipboard::copy_to_clipboard, filter::FileFilters, render::render_digest, repo::Repo,
+    walk::collect_candidate_files,
 };
 
 pub fn run(cli: Cli) -> Result<()> {
@@ -12,11 +13,15 @@ pub fn run(cli: Cli) -> Result<()> {
 
     if cli.stdout {
         print!("{digest}");
+        eprintln!("ctx rendered {} files, {} bytes", files.len(), digest.len());
     } else {
-        println!("{digest}");
+        copy_to_clipboard(&digest)?;
+        eprintln!(
+            "ctx copied {} files, {} bytes to clipboard",
+            files.len(),
+            digest.len()
+        );
     }
-
-    eprintln!("ctx rendered {} files, {} bytes", files.len(), digest.len());
 
     Ok(())
 }
