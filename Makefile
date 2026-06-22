@@ -1,4 +1,4 @@
-.PHONY: fmt clippy test run ci
+.PHONY: fmt clippy test run install ci
 
 fmt:
 	cargo fmt --all
@@ -11,5 +11,8 @@ test:
 
 run:
 	cargo run
+
+i install:
+	cargo install --path .
 
 ci: fmt clippy test

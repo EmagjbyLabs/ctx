@@ -8,6 +8,8 @@ use std::{
 use anyhow::{Context, Result};
 use ignore::WalkBuilder;
 
+use crate::filter::FileFilters;
+
 const MAX_FILE_SIZE_BYTES: u64 = 512 * 1024;
 
 const DEFAULT_EXCLUDED_DIRS: &[&str] = &[
@@ -32,7 +34,7 @@ pub struct CandidateFile {
     pub size_bytes: u64,
 }
 
-pub fn collect_candidate_files(root: &Path) -> Result<Vec<CandidateFile>> {
+pub fn collect_candidate_files(root: &Path, filters: &FileFilters) -> Result<Vec<CandidateFile>> {
     let mut files = Vec::new();
 
     let walker = WalkBuilder::new(root)
@@ -51,6 +53,21 @@ pub fn collect_candidate_files(root: &Path) -> Result<Vec<CandidateFile>> {
             continue;
         }
 
+        let relative_path = path
+            .strip_prefix(root)
+            .with_context(|| {
+                format!(
+                    "failed to strip repository root {} from {}",
+                    root.display(),
+                    path.display()
+                )
+            })?
+            .to_path_buf();
+
+        if !filters.allows(&relative_path) {
+            continue;
+        }
+
         let metadata = entry
             .metadata()
             .with_context(|| format!("failed to read metadata for {}", path.display()))?;
@@ -66,17 +83,6 @@ pub fn collect_candidate_files(root: &Path) -> Result<Vec<CandidateFile>> {
         if looks_binary(path)? {
             continue;
         }
-
-        let relative_path = path
-            .strip_prefix(root)
-            .with_context(|| {
-                format!(
-                    "failed to strip repository root {} from {}",
-                    root.display(),
-                    path.display()
-                )
-            })?
-            .to_path_buf();
 
         files.push(CandidateFile {
             absolute_path: path.to_path_buf(),

@@ -1,4 +1,4 @@
-use clap::Parser;
+use clap::{ArgAction, Parser};
 
 /// Copy the current local repository into prompt-ready context.
 #[derive(Debug, Parser)]
@@ -6,11 +6,21 @@ use clap::Parser;
 #[command(author, version, about)]
 pub struct Cli {
     /// Include only files matching these glob-style patterns.
-    #[arg(long, value_name = "PATTERN")]
+    #[arg(
+        long,
+        value_name = "PATTERN",
+        num_args = 1..,
+        action = ArgAction::Append
+    )]
     pub include: Vec<String>,
 
     /// Exclude files matching these glob-style patterns.
-    #[arg(long, value_name = "PATTERN")]
+    #[arg(
+        long,
+        value_name = "PATTERN",
+        num_args = 1..,
+        action = ArgAction::Append
+    )]
     pub exclude: Vec<String>,
 
     /// Print the generated digest to stdout instead of copying it to the clipboard.
